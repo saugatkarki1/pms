@@ -94,7 +94,7 @@ export function MiniDonutChart({
     const total = data.reduce((sum, d) => sum + d.value, 0)
 
     return (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
             <ResponsiveContainer width={size} height={size}>
                 <PieChart>
                     <Pie

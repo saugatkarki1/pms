@@ -301,144 +301,8 @@ export default function OwnerDashboardPage() {
             )}
           </>
         }
-        heroPanel={
-          <div className="dash-hero">
-            <div className="dash-hero-title">{t('dash.companyOverview')}</div>
-            <div className="dash-hero-subtitle">
-              {t('dash.revenueVsLabor')} — {format(new Date(), 'MMMM yyyy')}
-            </div>
-            <div className="dash-hero-stats">
-              <div className="dash-hero-stat">
-                <span className="dash-hero-stat-value">{v(stats.totalWorkers)}</span>
-                <span className="dash-hero-stat-label">{t('dash.totalEmployees')}</span>
-              </div>
-              <div className="dash-hero-stat">
-                <span className="dash-hero-stat-value">{v(stats.presentToday)}</span>
-                <span className="dash-hero-stat-label">{t('dash.presentToday')}</span>
-              </div>
-              <div className="dash-hero-stat">
-                <span className="dash-hero-stat-value">{v(stats.attendanceRate)}%</span>
-                <span className="dash-hero-stat-label">{t('dash.attendanceRate')}</span>
-              </div>
-            </div>
-            <div className="dash-hero-chart">
-              <MiniLineChart
-                data={revenueData}
-                color="#818cf8"
-                color2="#34d399"
-                height={130}
-                showSecondLine
-              />
-            </div>
-            <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 11 }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.6)' }}>
-                <span style={{ width: 20, height: 2, background: '#818cf8', borderRadius: 2 }} /> {t('dash.revenue')}
-              </span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.6)' }}>
-                <span style={{ width: 20, height: 2, background: '#34d399', borderRadius: 2, borderTop: '1px dashed #34d399' }} /> {t('dash.laborCost')}
-              </span>
-            </div>
-          </div>
-        }
-        rightPanel={
-          <div className="dash-right-panel">
-            {/* Pending Approvals Section */}
-            {pendingWorkers.length > 0 && (
-              <>
-                <div className="dash-right-panel-title">
-                  <span>{t('dash.pendingApprovals')}</span>
-                  <span className="dash-badge dash-badge-warning">{pendingWorkers.length}</span>
-                </div>
-
-                {pendingWorkers.slice(0, 3).map((worker) => (
-                  <div className="dash-list-item" key={worker.id} style={{ alignItems: 'center' }}>
-                    <div className="dash-list-item-icon" style={{ fontSize: 12, background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b' }}>
-                      👤
-                    </div>
-                    <div className="dash-list-item-text" style={{ flex: 1 }}>
-                      <div className="dash-list-item-title">{worker.full_name || worker.email}</div>
-                      <div className="dash-list-item-subtitle">{worker.email}</div>
-                    </div>
-                    <div style={{ display: 'flex', gap: 4 }}>
-                      <button
-                        className="dash-icon-btn"
-                        style={{ color: '#22c55e' }}
-                        onClick={() => handleApproveWorker(worker.id)}
-                        title="Approve"
-                      >
-                        <CheckCircle2 size={16} />
-                      </button>
-                      <button
-                        className="dash-icon-btn danger"
-                        onClick={() => handleRejectWorker(worker.id)}
-                        title="Reject"
-                      >
-                        <XCircle size={16} />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-
-                {pendingWorkers.length > 3 && (
-                  <div style={{ fontSize: 11, color: 'var(--dash-text-muted)', textAlign: 'center', marginTop: 4 }}>
-                    +{pendingWorkers.length - 3} more pending
-                  </div>
-                )}
-
-                <div style={{ borderTop: '1px solid var(--dash-border)', margin: '8px 0' }} />
-              </>
-            )}
-
-            {/* Departments Section */}
-            <div className="dash-right-panel-title">
-              <span>{t('dash.departments')}</span>
-              <Building2 size={16} className="dash-right-panel-info-icon" />
-            </div>
-
-            {departments.length > 0 ? departments.slice(0, 4).map((dept) => (
-              <div className="dash-list-item" key={dept.id} onClick={() => router.push('/protected/departments')} style={{ cursor: 'pointer' }}>
-                <div className="dash-list-item-icon">{deptIcons[dept.name] || '🏢'}</div>
-                <div className="dash-list-item-text">
-                  <div className="dash-list-item-title">{dept.name}</div>
-                  <div className="dash-list-item-subtitle">{dept.worker_count} {t('common.employees')}</div>
-                </div>
-                <ChevronRight size={16} className="dash-list-item-arrow" />
-              </div>
-            )) : (
-              <div style={{ fontSize: 12, color: 'var(--dash-text-muted)', padding: '8px 0' }}>
-                {t('dash.noDepartments')}
-              </div>
-            )}
-
-            <div style={{ borderTop: '1px solid var(--dash-border)', paddingTop: 12, marginTop: 4 }}>
-              <div className="dash-right-panel-title" style={{ marginBottom: 8 }}>
-                <span>{t('dash.alerts')}</span>
-                <AlertTriangle size={14} style={{ color: '#f59e0b' }} />
-              </div>
-              {alerts.map((alert, i) => (
-                <div className="dash-alert-item" key={i}>
-                  <span className="dash-alert-dot" style={{ background: alert.color }} />
-                  {alert.text}
-                </div>
-              ))}
-            </div>
-
-            <div style={{ display: 'flex', gap: 8, marginTop: 'auto', flexDirection: 'column' }}>
-              <button className="dash-btn dash-btn-primary" onClick={() => router.push('/protected/departments')}>
-                <Plus size={16} /> {t('dash.addDepartment')}
-              </button>
-              <button
-                className="dash-btn dash-btn-accent"
-                onClick={() => setShowCreateAdmin(true)}
-              >
-                <ShieldCheck size={16} /> {t('dash.createAdmin')}
-              </button>
-            </div>
-          </div>
-        }
         bottomCards={
           <>
-            {/* Payroll Overview */}
             <DashboardCard
               title={t('dash.payrollOverview')}
               subtitle={t('dash.currentPayCycle')}
@@ -465,7 +329,6 @@ export default function OwnerDashboardPage() {
               </div>
             </DashboardCard>
 
-            {/* Workforce Distribution */}
             <DashboardCard
               title={t('dash.workforceDistribution')}
               subtitle={t('dash.employeeTypeRatio')}
@@ -478,7 +341,6 @@ export default function OwnerDashboardPage() {
               </div>
             </DashboardCard>
 
-            {/* Attendance Health */}
             <DashboardCard
               title={t('dash.attendanceHealth')}
               subtitle={t('dash.thisMonthOverview')}
@@ -509,7 +371,6 @@ export default function OwnerDashboardPage() {
               </div>
             </DashboardCard>
 
-            {/* Performance Snapshot */}
             <DashboardCard
               title={t('dash.performanceSnapshot')}
               subtitle={t('dash.topPerformingTeams')}
@@ -518,7 +379,7 @@ export default function OwnerDashboardPage() {
               animationDelay={0.4}
             >
               {topTeams.map((team) => (
-                <div key={team.name}>
+                <div key={team.name} style={{ marginBottom: 12 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                     <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--dash-text-primary)' }}>{team.name}</span>
                     <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--dash-accent)' }}>{team.score}%</span>
@@ -531,7 +392,142 @@ export default function OwnerDashboardPage() {
             </DashboardCard>
           </>
         }
-      />
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--dash-gap-lg)' }}>
+          {/* Pending Worker Approvals (If any) */}
+          {pendingWorkers.length > 0 && (
+            <div className="dash-card">
+              <div className="dash-card-header">
+                <div>
+                  <h3 className="dash-card-title">{t('dash.pendingApprovals')}</h3>
+                  <p className="dash-card-subtitle">{pendingWorkers.length} workers waiting for approval</p>
+                </div>
+                <div className="dash-badge dash-badge-warning">{pendingWorkers.length}</div>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '12px', marginTop: 12 }}>
+                {pendingWorkers.slice(0, 6).map((worker) => (
+                  <div className="dash-list-item" key={worker.id} style={{ background: 'var(--dash-surface-alt)', padding: '12px', borderRadius: '12px', border: '1px solid var(--dash-border)' }}>
+                    <div className="dash-list-item-icon" style={{ fontSize: 12, background: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b' }}>
+                      👤
+                    </div>
+                    <div className="dash-list-item-text" style={{ flex: 1 }}>
+                      <div className="dash-list-item-title">{worker.full_name || worker.email}</div>
+                      <div className="dash-list-item-subtitle">{worker.email}</div>
+                    </div>
+                    <div style={{ display: 'flex', gap: 4 }}>
+                      <button className="dash-icon-btn" style={{ color: '#22c55e' }} onClick={() => handleApproveWorker(worker.id)} title="Approve">
+                        <CheckCircle2 size={16} />
+                      </button>
+                      <button className="dash-icon-btn danger" onClick={() => handleRejectWorker(worker.id)} title="Reject">
+                        <XCircle size={16} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Company Overview Chart */}
+          <div className="dash-hero">
+            <div className="dash-hero-title">{t('dash.companyOverview')}</div>
+            <div className="dash-hero-subtitle">
+              {t('dash.revenueVsLabor')} — {format(new Date(), 'MMMM yyyy')}
+            </div>
+            <div className="dash-hero-stats">
+              <div className="dash-hero-stat">
+                <span className="dash-hero-stat-value">{v(stats.totalWorkers)}</span>
+                <span className="dash-hero-stat-label">{t('dash.totalEmployees')}</span>
+              </div>
+              <div className="dash-hero-stat">
+                <span className="dash-hero-stat-value">{v(stats.presentToday)}</span>
+                <span className="dash-hero-stat-label">{t('dash.presentToday')}</span>
+              </div>
+              <div className="dash-hero-stat">
+                <span className="dash-hero-stat-value">{v(stats.attendanceRate)}%</span>
+                <span className="dash-hero-stat-label">{t('dash.attendanceRate')}</span>
+              </div>
+            </div>
+            <div className="dash-hero-chart">
+              <MiniLineChart
+                data={revenueData}
+                color="#818cf8"
+                color2="#34d399"
+                height={160}
+                showSecondLine
+              />
+            </div>
+            <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 11 }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.6)' }}>
+                <span style={{ width: 20, height: 2, background: '#818cf8', borderRadius: 2 }} /> {t('dash.revenue')}
+              </span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.6)' }}>
+                <span style={{ width: 20, height: 2, background: '#34d399', borderRadius: 2, borderTop: '1px dashed #34d399' }} /> {t('dash.laborCost')}
+              </span>
+            </div>
+          </div>
+
+          {/* Departments Section */}
+          <div className="dash-card">
+            <div className="dash-card-header" style={{ marginBottom: 20 }}>
+              <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <h3 className="dash-card-title">{t('dash.departments')}</h3>
+                  <p className="dash-card-subtitle">{t('dash.manageYourOrganization')}</p>
+                </div>
+                <button
+                  className="dash-btn dash-btn-accent"
+                  style={{ padding: '8px 16px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px' }}
+                  onClick={() => setShowCreateAdmin(true)}
+                >
+                  <ShieldCheck size={16} /> {t('dash.createAdmin')}
+                </button>
+              </div>
+            </div>
+
+            <div style={{ 
+              display: 'grid', 
+              gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', 
+              gap: '16px',
+            }}>
+              {departments.length > 0 ? departments.map((dept) => (
+                <div key={dept.id} className="dash-list-item" onClick={() => router.push('/protected/departments')} style={{ cursor: 'pointer', background: 'var(--dash-surface-alt)', padding: '12px', borderRadius: '12px', border: '1px solid var(--dash-border)' }}>
+                  <div className="dash-list-item-icon" style={{ fontSize: 18, width: 40, height: 40, background: 'white' }}>{deptIcons[dept.name] || '🏢'}</div>
+                  <div className="dash-list-item-text" style={{ marginLeft: 10 }}>
+                    <div className="dash-list-item-title" style={{ fontSize: 14, fontWeight: 600 }}>{dept.name}</div>
+                    <div className="dash-list-item-subtitle">{dept.worker_count} {t('common.employees')}</div>
+                  </div>
+                  <ChevronRight size={16} className="dash-list-item-arrow" />
+                </div>
+              )) : (
+                <div style={{ fontSize: 12, color: 'var(--dash-text-muted)', padding: '8px 0' }}>
+                  {t('dash.noDepartments')}
+                </div>
+              )}
+            </div>
+
+            <div style={{ borderTop: '1px solid var(--dash-border)', paddingTop: 16, marginTop: 16 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--dash-text-primary)', textTransform: 'uppercase', letterSpacing: '1px' }}>{t('dash.alerts')}</span>
+                  <AlertTriangle size={14} style={{ color: '#f59e0b' }} />
+                </div>
+                <button className="dash-btn dash-btn-ghost" style={{ fontSize: 11, padding: '4px 8px' }} onClick={() => router.push('/protected/departments')}>
+                  <Plus size={14} /> {t('dash.addDepartment')}
+                </button>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
+                {alerts.map((alert, i) => (
+                  <div className="dash-alert-item" key={i} style={{ background: 'var(--dash-surface-alt)', padding: '8px 12px', borderRadius: '8px', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span className="dash-alert-dot" style={{ background: alert.color, width: 6, height: 6, borderRadius: '50%' }} />
+                    {alert.text}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </DashboardShell>
 
       {/* Create Admin Modal */}
       {showCreateAdmin && (
@@ -616,4 +612,3 @@ export default function OwnerDashboardPage() {
     </>
   )
 }
-

@@ -304,41 +304,44 @@ export default function AdminDashboardPage() {
                         </>
                     )}
 
-                    <div className="dash-right-panel-title">
-                        <span>{t('admin.todayTasks')}</span>
-                        <Clock size={16} className="dash-right-panel-info-icon" />
+                    <div className="dash-right-panel-title" style={{ marginBottom: 8 }}>
+                        <span>{t('admin.leaveRequests')}</span>
+                        <span className="dash-badge dash-badge-warning">{leaveRequests.length}</span>
                     </div>
-
-                    {todayTasks.map((task, i) => (
+                    {leaveRequests.map((req, i) => (
                         <div className="dash-list-item" key={i}>
+                            <div className="dash-list-item-icon" style={{ fontSize: 14 }}>👤</div>
                             <div className="dash-list-item-text">
-                                <div className="dash-list-item-title">{task.text}</div>
+                                <div className="dash-list-item-title">{req.name}</div>
+                                <div className="dash-list-item-subtitle">{req.type} · {req.days}d</div>
                             </div>
-                            <span className={`dash-badge dash-badge-${task.type}`}>{task.badge}</span>
+                            <ChevronRight size={14} className="dash-list-item-arrow" />
                         </div>
                     ))}
-
-                    <div style={{ borderTop: '1px solid var(--dash-border)', paddingTop: 12, marginTop: 4 }}>
-                        <div className="dash-right-panel-title" style={{ marginBottom: 8 }}>
-                            <span>{t('admin.leaveRequests')}</span>
-                            <span className="dash-badge dash-badge-warning">{leaveRequests.length}</span>
-                        </div>
-                        {leaveRequests.map((req, i) => (
-                            <div className="dash-list-item" key={i}>
-                                <div className="dash-list-item-icon" style={{ fontSize: 14 }}>👤</div>
-                                <div className="dash-list-item-text">
-                                    <div className="dash-list-item-title">{req.name}</div>
-                                    <div className="dash-list-item-subtitle">{req.type} · {req.days}d</div>
-                                </div>
-                                <ChevronRight size={14} className="dash-list-item-arrow" />
-                            </div>
-                        ))}
-                    </div>
 
                     <button className="dash-btn dash-btn-accent" style={{ marginTop: 'auto' }} onClick={() => router.push('/protected/attendance')}>
                         <Plus size={16} /> {t('admin.createShift')}
                     </button>
                 </div>
+            }
+            middleSection={
+                <DashboardCard
+                    title={t('admin.todayTasks')}
+                    subtitle={t('admin.overview')}
+                    icon={<Clock size={18} />}
+                    iconBg="var(--dash-info-soft)"
+                >
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 16 }}>
+                        {todayTasks.map((task, i) => (
+                            <div className="dash-list-item" key={i} style={{ border: '1px solid var(--dash-border)', borderRadius: 12, padding: '12px 16px' }}>
+                                <div className="dash-list-item-text">
+                                    <div className="dash-list-item-title" style={{ fontSize: 14 }}>{task.text}</div>
+                                </div>
+                                <span className={`dash-badge dash-badge-${task.type}`}>{task.badge}</span>
+                            </div>
+                        ))}
+                    </div>
+                </DashboardCard>
             }
             bottomCards={
                 <>

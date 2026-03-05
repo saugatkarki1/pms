@@ -20,7 +20,7 @@ export function Sidebar({ user }: SidebarProps) {
 
   const handleLogout = async () => {
     const supabase = createClient()
-    await fetch('/api/clear-2fa', { method: 'POST' })
+    // clear-2fa call removed — OTP 2FA no longer used
     await supabase.auth.signOut()
     router.push('/auth/login')
   }

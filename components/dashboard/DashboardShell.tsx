@@ -23,6 +23,8 @@ interface DashboardShellProps {
     statusPills?: React.ReactNode
     heroPanel?: React.ReactNode
     rightPanel?: React.ReactNode
+    middleSection?: React.ReactNode
+    actionButtons?: React.ReactNode
     bottomCards?: React.ReactNode
     fourColBottom?: boolean
     children?: React.ReactNode
@@ -48,6 +50,8 @@ export function DashboardShell({
     statusPills,
     heroPanel,
     rightPanel,
+    middleSection,
+    actionButtons,
     bottomCards,
     fourColBottom = false,
     children,
@@ -64,7 +68,7 @@ export function DashboardShell({
 
     const handleLogout = async () => {
         const supabase = createClient()
-        await fetch('/api/clear-2fa', { method: 'POST' })
+        // clear-2fa call removed — OTP 2FA no longer used
         await supabase.auth.signOut()
         router.push('/auth/login')
     }
@@ -76,7 +80,7 @@ export function DashboardShell({
         (item) => user && item.roles.includes(user.role)
     )
 
-    const isDashboardMode = !!(heroPanel || rightPanel || bottomCards)
+    const isDashboardMode = !!(heroPanel || rightPanel || middleSection || bottomCards || actionButtons)
 
     return (
         <div className="dash-master">
@@ -130,23 +134,35 @@ export function DashboardShell({
 
                 {/* Main Content Area */}
                 <main className="dash-main">
+                    {/* Status Strip - Always render if provided */}
+                    {statusPills && (
+                        <div className="dash-status-strip">{statusPills}</div>
+                    )}
+
                     {isDashboardMode ? (
                         <>
-                            {/* Status Strip */}
-                            {statusPills && (
-                                <div className="dash-status-strip">{statusPills}</div>
+                            {/* Dashboard Grid: Hero, Right, Middle */}
+                            {(heroPanel || rightPanel || middleSection) && (
+                                <div className="dash-grid-top">
+                                    {heroPanel && <div className="dash-area-hero">{heroPanel}</div>}
+                                    {middleSection && <div className="dash-area-middle">{middleSection}</div>}
+                                    {rightPanel && <div className="dash-area-right">{rightPanel}</div>}
+                                </div>
                             )}
 
-                            {/* Top Grid: Hero + Right */}
-                            <div className="dash-grid-top">
-                                {heroPanel}
-                                {rightPanel}
-                            </div>
+                            {/* Action Buttons */}
+                            {actionButtons && (
+                                <div className="dash-action-row">{actionButtons}</div>
+                            )}
 
                             {/* Bottom Grid: Cards */}
-                            <div className={`dash-grid-bottom ${fourColBottom ? 'four-cols' : ''}`}>
-                                {bottomCards}
-                            </div>
+                            {bottomCards && (
+                                <div className={`dash-grid-bottom ${fourColBottom ? 'four-cols' : ''}`}>
+                                    {bottomCards}
+                                </div>
+                            )}
+
+                            {children}
                         </>
                     ) : (
                         children

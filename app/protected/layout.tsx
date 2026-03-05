@@ -13,8 +13,8 @@ export default function ProtectedLayout({
   const router = useRouter()
   const pathname = usePathname()
   const [waitingForProfile, setWaitingForProfile] = useState(false)
-  const [checking2FA, setChecking2FA] = useState(false)
-  const [is2FAVerified, setIs2FAVerified] = useState(false)
+
+  // 2FA check state removed — Owner/Admin no longer require OTP verification
 
   useEffect(() => {
     if (!loading && !authUser) {
@@ -36,35 +36,6 @@ export default function ProtectedLayout({
     }
   }, [loading, authUser, user])
 
-  // Check 2FA status for Owner/Admin
-  useEffect(() => {
-    if (!user) return
-
-    // Only owner and admin need 2FA — workers skip entirely
-    if (user.role !== 'owner' && user.role !== 'admin') {
-      setIs2FAVerified(true)
-      setChecking2FA(false)
-      return
-    }
-
-    // Owner/Admin: start 2FA check
-    setChecking2FA(true)
-
-    const check2FA = async () => {
-      try {
-        const res = await fetch('/api/check-2fa')
-        const data = await res.json()
-        setIs2FAVerified(data.verified)
-      } catch {
-        setIs2FAVerified(false)
-      } finally {
-        setChecking2FA(false)
-      }
-    }
-
-    check2FA()
-  }, [user])
-
   // Redirect workers who haven't completed onboarding
   useEffect(() => {
     if (user && user.role === 'worker' && user.is_active && !user.onboarding_completed && pathname !== '/protected/onboarding') {
@@ -72,13 +43,13 @@ export default function ProtectedLayout({
     }
   }, [user, pathname, router])
 
-  if (loading || waitingForProfile || checking2FA) {
+  if (loading || waitingForProfile) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <div className="mb-4 h-12 w-12 rounded-full border-4 border-primary border-t-transparent animate-spin mx-auto" />
           <p className="text-muted-foreground">
-            {waitingForProfile ? 'Setting up your profile...' : checking2FA ? 'Verifying security...' : 'Loading...'}
+            {waitingForProfile ? 'Setting up your profile...' : 'Loading...'}
           </p>
         </div>
       </div>
@@ -116,7 +87,7 @@ export default function ProtectedLayout({
               onClick={async () => {
                 const { createClient } = await import('@/lib/supabase/client')
                 const supabase = createClient()
-                await fetch('/api/clear-2fa', { method: 'POST' })
+                // clear-2fa endpoint removed — no longer needed
                 await supabase.auth.signOut()
                 router.push('/auth/login')
               }}
@@ -130,48 +101,7 @@ export default function ProtectedLayout({
     )
   }
 
-  // Owner/Admin has not completed 2FA — redirect to login
-  if ((user.role === 'owner' || user.role === 'admin') && !is2FAVerified) {
-    return (
-      <div className="flex min-h-screen items-center justify-center" style={{ background: 'var(--dash-bg, #0f0f13)' }}>
-        <div className="text-center max-w-md space-y-6" style={{ padding: 40 }}>
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full" style={{ background: 'rgba(99, 102, 241, 0.15)' }}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="#818cf8" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-            </svg>
-          </div>
-          <h2 style={{ fontSize: 24, fontWeight: 700, color: '#fff' }}>2FA Verification Required</h2>
-          <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>
-            Two-factor authentication is required for {user.role === 'owner' ? 'Owner' : 'Admin'} accounts.
-            Please log in again to complete the verification.
-          </p>
-          <div style={{ display: 'flex', gap: 12, justifyContent: 'center', marginTop: 8 }}>
-            <button
-              onClick={async () => {
-                const { createClient } = await import('@/lib/supabase/client')
-                const supabase = createClient()
-                await fetch('/api/clear-2fa', { method: 'POST' })
-                await supabase.auth.signOut()
-                router.push('/auth/login')
-              }}
-              style={{
-                padding: '10px 24px',
-                borderRadius: 12,
-                background: 'linear-gradient(135deg, #6366f1, #818cf8)',
-                color: '#fff',
-                fontSize: 14,
-                fontWeight: 600,
-                border: 'none',
-                cursor: 'pointer',
-              }}
-            >
-              Go to Login
-            </button>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  // 2FA verification gate removed — Owner/Admin now access dashboard directly after password auth
 
   // Worker is not yet approved — show pending approval page
   if (user.role === 'worker' && !user.is_active) {
@@ -204,7 +134,7 @@ export default function ProtectedLayout({
               onClick={async () => {
                 const { createClient } = await import('@/lib/supabase/client')
                 const supabase = createClient()
-                await fetch('/api/clear-2fa', { method: 'POST' })
+                // clear-2fa endpoint removed — no longer needed
                 await supabase.auth.signOut()
                 router.push('/auth/login')
               }}

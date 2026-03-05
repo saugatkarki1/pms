@@ -247,25 +247,21 @@ export default function WorkerDashboardPage() {
             }
             rightPanel={
                 <div className="dash-right-panel">
-                    <div className="dash-right-panel-title">
-                        <span>{t('worker.upcomingShifts')}</span>
-                        <CalendarDays size={16} className="dash-right-panel-info-icon" />
+                    <div className="dash-right-panel-title" style={{ marginBottom: 12 }}>
+                        <span>{t('worker.performance')}</span>
+                        <TrendingUp size={16} className="dash-right-panel-info-icon" />
                     </div>
 
-                    {upcomingShifts.map((shift, i) => (
-                        <div className="dash-list-item" key={i}>
-                            <div className="dash-list-item-icon" style={{ fontSize: 12, fontWeight: 700 }}>
-                                {shift.day.slice(0, 2)}
-                            </div>
-                            <div className="dash-list-item-text">
-                                <div className="dash-list-item-title">{shift.day}</div>
-                                <div className="dash-list-item-subtitle">{shift.time}</div>
-                            </div>
-                            <span className="dash-badge dash-badge-neutral">{shift.type}</span>
-                        </div>
-                    ))}
+                    <div className="dash-stat-row">
+                        <span className="dash-stat-label">{t('worker.onTimeRate')}</span>
+                        <span className="dash-stat-value" style={{ color: 'var(--dash-success)' }}>98%</span>
+                    </div>
+                    <div className="dash-stat-row">
+                        <span className="dash-stat-label">{t('worker.weeklyGoal')}</span>
+                        <span className="dash-stat-value">{weeklyPct}%</span>
+                    </div>
 
-                    <div style={{ borderTop: '1px solid var(--dash-border)', paddingTop: 12, marginTop: 4 }}>
+                    <div style={{ borderTop: '1px solid var(--dash-border)', paddingTop: 12, marginTop: 12 }}>
                         <div className="dash-stat-row">
                             <span className="dash-stat-label">{t('worker.leaveBalance')}</span>
                             <span className="dash-stat-value">{v(stats.leaveBalance)} {t('common.days')}</span>
@@ -276,6 +272,29 @@ export default function WorkerDashboardPage() {
                         <Send size={16} /> {t('worker.requestLeave')}
                     </button>
                 </div>
+            }
+            middleSection={
+                <DashboardCard
+                    title={t('worker.upcomingShifts')}
+                    subtitle={t('worker.next7Days')}
+                    icon={<CalendarDays size={18} />}
+                    iconBg="var(--dash-accent-soft)"
+                >
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
+                        {upcomingShifts.map((shift, i) => (
+                            <div key={i} className="dash-list-item" style={{ border: '1px solid var(--dash-border)', borderRadius: 12, padding: '12px 16px' }}>
+                                <div className="dash-list-item-icon" style={{ fontSize: 12, fontWeight: 700 }}>
+                                    {shift.day.slice(0, 2)}
+                                </div>
+                                <div className="dash-list-item-text">
+                                    <div className="dash-list-item-title">{shift.day}</div>
+                                    <div className="dash-list-item-subtitle">{shift.time}</div>
+                                </div>
+                                <span className="dash-badge dash-badge-neutral">{shift.type}</span>
+                            </div>
+                        ))}
+                    </div>
+                </DashboardCard>
             }
             bottomCards={
                 <>

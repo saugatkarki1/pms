@@ -18,7 +18,7 @@
 
     /* Spacing */
     --dash-gap: 16px;
-    --dash-gap-lg: 20px;
+    --dash-gap-lg: 24px;
     --dash-pad: 24px;
 
     /* Sidebar */
@@ -99,11 +99,22 @@
     }
 }
 
+/* --- Box Sizing --- */
+.dash-master,
+.dash-master *,
+.dash-master *::before,
+.dash-master *::after {
+    box-sizing: border-box;
+}
+
 /* --- Master Container --- */
 .dash-master {
     display: flex;
     min-height: 100vh;
     background: #f0f1f5;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
 }
 
 .dash-container {
@@ -111,6 +122,9 @@
     flex: 1;
     padding: 16px;
     gap: 0;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
 }
 
 /* --- Sidebar --- */
@@ -217,11 +231,15 @@
     border-radius: 0 var(--dash-radius-xl) var(--dash-radius-xl) 0;
     padding: var(--dash-pad);
     overflow-y: auto;
+    overflow-x: hidden;
     max-height: calc(100vh - 32px);
     display: flex;
     flex-direction: column;
     gap: var(--dash-gap-lg);
     animation: dashFadeIn 0.4s ease;
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
 }
 
 /* --- Status Strip (Pill Metrics) --- */
@@ -287,19 +305,78 @@
 /* --- Grid Layout --- */
 .dash-grid-top {
     display: grid;
-    grid-template-columns: 1fr 320px;
-    gap: var(--dash-gap);
-    min-height: 360px;
+    grid-template-columns: 1fr;
+    grid-template-areas: 
+        "hero"
+        "middle"
+        "right";
+    gap: var(--dash-gap-lg);
+    min-height: auto;
+}
+
+.dash-area-hero { grid-area: hero; }
+.dash-area-middle { grid-area: middle; }
+.dash-area-right { grid-area: right; }
+
+@media (min-width: 1024px) {
+    .dash-grid-top {
+        grid-template-columns: 1fr 340px;
+        grid-template-areas: 
+            "hero right"
+            "middle right";
+        min-height: 360px;
+    }
 }
 
 .dash-grid-bottom {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--dash-gap);
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: var(--dash-gap-lg);
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .dash-grid-bottom {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1280px) {
+    .dash-grid-bottom {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
 }
 
 .dash-grid-bottom.four-cols {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+    .dash-grid-bottom.four-cols {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (min-width: 1280px) {
+    .dash-grid-bottom.four-cols {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+/* --- Middle Section --- */
+.dash-middle-section, .dash-area-middle {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--dash-gap-lg);
+}
+
+/* --- Action Buttons Row --- */
+.dash-action-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
 }
 
 /* --- Cards --- */
@@ -313,6 +390,9 @@
     animation: dashFadeIn 0.5s ease backwards;
     display: flex;
     flex-direction: column;
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
 }
 
 .dash-card:hover {
@@ -426,6 +506,9 @@
     min-height: 120px;
     position: relative;
     z-index: 1;
+    min-width: 0;
+    overflow: hidden;
+    width: 100%;
 }
 
 /* --- Right Panel --- */
@@ -519,6 +602,7 @@
     border: none;
     transition: all 0.2s ease;
     text-decoration: none;
+    min-height: 44px;
 }
 
 .dash-btn-primary {
@@ -710,6 +794,9 @@
     align-items: center;
     justify-content: center;
     flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    width: 100%;
 }
 
 /* ===== Content Page Styles ===== */
@@ -1348,14 +1435,6 @@
         overflow-y: visible;
     }
 
-    .dash-grid-bottom {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .dash-grid-bottom.four-cols {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
     .dash-metrics-row {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -1365,6 +1444,7 @@
     .dash-container {
         flex-direction: column;
         padding: 8px;
+        max-width: 100vw;
     }
 
     .dash-sidebar {
@@ -1400,6 +1480,7 @@
         border-radius: 0 0 var(--dash-radius-xl) var(--dash-radius-xl);
         max-height: none;
         padding: 16px;
+        overflow-x: hidden;
     }
 
     .dash-grid-top {
@@ -1412,14 +1493,6 @@
         max-height: none;
         overflow-y: visible;
         padding: 16px;
-    }
-
-    .dash-grid-bottom {
-        grid-template-columns: 1fr;
-    }
-
-    .dash-grid-bottom.four-cols {
-        grid-template-columns: 1fr;
     }
 
     .dash-hero-stats {
@@ -1478,9 +1551,26 @@
         padding: 20px;
         min-height: 260px;
     }
+
+    .dash-hero-chart {
+        min-height: 100px;
+    }
+
+    /* Action buttons stack full-width on mobile */
+    .dash-action-row {
+        flex-direction: column;
+    }
+
+    .dash-action-row .dash-btn {
+        width: 100%;
+    }
 }
 
 @media (max-width: 480px) {
+    .dash-main {
+        padding: 12px;
+    }
+
     .dash-hero-stats {
         flex-direction: column;
         gap: 12px;
@@ -1492,5 +1582,18 @@
 
     .dash-card {
         padding: 16px;
+    }
+
+    .dash-hero {
+        padding: 16px;
+        min-height: 220px;
+    }
+
+    .dash-hero-title {
+        font-size: 17px;
+    }
+
+    .dash-hero-subtitle {
+        font-size: 12px;
     }
 }
