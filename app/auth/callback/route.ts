@@ -13,39 +13,45 @@ export async function GET(request: Request) {
             // After exchanging code, check if user profile exists and create if missing
             const { data: { user: authUser } } = await supabase.auth.getUser()
             if (authUser) {
-                const { data: existingUser } = await supabase
-                    .from('users')
-                    .select('id')
-                    .eq('id', authUser.id)
-                    .single()
-
-                if (!existingUser) {
-                    // Profile doesn't exist — create tenant + user
-                    const meta = authUser.user_metadata || {}
-                    const fullName = meta.full_name || authUser.email?.split('@')[0] || 'User'
-
-                    // SECURITY: Always force worker role for auto-created profiles
-                    const role = 'worker'
-
-                    const { data: tenant } = await supabase
-                        .from('tenants')
-                        .insert({ name: fullName, email: authUser.email })
+                try {
+                    const { data: existingUser, error: checkError } = await supabase
+                        .from('users')
                         .select('id')
-                        .single()
+                        .eq('id', authUser.id)
+                        .maybeSingle()
 
-                    if (tenant) {
-                        await supabase
-                            .from('users')
-                            .insert({
-                                id: authUser.id,
-                                tenant_id: tenant.id,
-                                email: authUser.email!,
-                                full_name: fullName,
-                                role: role,
-                                is_active: false,
-                                onboarding_completed: false,
-                            })
+                    if (checkError) {
+                        console.error('[auth/callback] Error checking user profile:', {
+                            message: checkError.message,
+                            code: checkError.code,
+                            details: checkError.details,
+                        })
+                        // Don't block the redirect — profile creation can happen client-side
                     }
+
+                    if (!existingUser && !checkError) {
+                        // Profile doesn't exist — create tenant + user via SECURITY DEFINER function
+                        const meta = authUser.user_metadata || {}
+                        const fullName = meta.full_name || authUser.email?.split('@')[0] || 'User'
+
+                        const { error: rpcError } = await supabase.rpc('handle_new_signup', {
+                            p_user_id: authUser.id,
+                            p_email: authUser.email!,
+                            p_full_name: fullName,
+                        })
+
+                        if (rpcError) {
+                            console.error('[auth/callback] handle_new_signup RPC failed:', {
+                                message: rpcError.message,
+                                code: rpcError.code,
+                                details: rpcError.details,
+                            })
+                        } else {
+                            console.log('[auth/callback] Profile created for:', authUser.email)
+                        }
+                    }
+                } catch (err) {
+                    console.error('[auth/callback] Unexpected error during profile check/creation:', err)
                 }
             }
 

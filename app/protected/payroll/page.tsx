@@ -31,7 +31,7 @@ interface PayrollRecord {
   worker_id: string
   period_start_date: string
   period_end_date: string
-  basic_salary: number
+  base_salary: number
   overtime_pay: number
   deductions: number
   bonus: number
@@ -67,7 +67,7 @@ export default function PayrollPage() {
     worker_id: '',
     period_start_date: '',
     period_end_date: '',
-    basic_salary: '',
+    base_salary: '',
     overtime_pay: '0',
     deductions: '0',
     bonus: '0',
@@ -119,7 +119,7 @@ export default function PayrollPage() {
         worker_id: record.worker_id,
         period_start_date: record.period_start_date,
         period_end_date: record.period_end_date,
-        basic_salary: record.basic_salary.toString(),
+        base_salary: record.base_salary.toString(),
         overtime_pay: record.overtime_pay.toString(),
         deductions: record.deductions.toString(),
         bonus: record.bonus.toString(),
@@ -132,7 +132,7 @@ export default function PayrollPage() {
         worker_id: '',
         period_start_date: `${currentMonth}-01`,
         period_end_date: new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0],
-        basic_salary: '',
+        base_salary: '',
         overtime_pay: '0',
         deductions: '0',
         bonus: '0',
@@ -142,7 +142,7 @@ export default function PayrollPage() {
   }
 
   const calculateNetSalary = () => {
-    const base = parseFloat(formData.basic_salary) || 0
+    const base = parseFloat(formData.base_salary) || 0
     const overtime = parseFloat(formData.overtime_pay) || 0
     const deductions = parseFloat(formData.deductions) || 0
     const bonus = parseFloat(formData.bonus) || 0
@@ -157,7 +157,7 @@ export default function PayrollPage() {
         const { error } = await supabase
           .from('payroll')
           .update({
-            basic_salary: parseFloat(formData.basic_salary),
+            base_salary: parseFloat(formData.base_salary),
             overtime_pay: parseFloat(formData.overtime_pay),
             deductions: parseFloat(formData.deductions),
             bonus: parseFloat(formData.bonus),
@@ -173,7 +173,7 @@ export default function PayrollPage() {
             worker_id: formData.worker_id,
             period_start_date: formData.period_start_date,
             period_end_date: formData.period_end_date,
-            basic_salary: parseFloat(formData.basic_salary),
+            base_salary: parseFloat(formData.base_salary),
             overtime_pay: parseFloat(formData.overtime_pay),
             deductions: parseFloat(formData.deductions),
             bonus: parseFloat(formData.bonus),
@@ -270,7 +270,7 @@ export default function PayrollPage() {
                 </div>
                 <div>
                   <Label>{t('payroll.baseSalary')}</Label>
-                  <Input type="number" value={formData.basic_salary} onChange={(e) => setFormData({ ...formData, basic_salary: e.target.value })} placeholder="5000" />
+                  <Input type="number" value={formData.base_salary} onChange={(e) => setFormData({ ...formData, base_salary: e.target.value })} placeholder="5000" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -398,7 +398,7 @@ export default function PayrollPage() {
                   <tr key={record.id}>
                     <td>{`${record.workers?.first_name} ${record.workers?.last_name}`}</td>
                     <td className="text-muted">{`${record.period_start_date} — ${record.period_end_date}`}</td>
-                    <td className="text-right">{formatNPR(record.basic_salary)}</td>
+                    <td className="text-right">{formatNPR(record.base_salary)}</td>
                     <td className="text-right font-semibold">{formatNPR(record.net_salary)}</td>
                     <td>{getStatusBadge(record.status)}</td>
                     <td>

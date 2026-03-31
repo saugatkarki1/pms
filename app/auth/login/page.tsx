@@ -129,6 +129,12 @@ function LoginForm() {
             </button>
           </form>
 
+          <div className="auth-link-row" style={{ marginBottom: 4 }}>
+            <Link href="/auth/forgot-password" className="auth-link">
+              Forgot your password?
+            </Link>
+          </div>
+
           <div className="auth-link-row">
             {t('auth.noAccount')}{' '}
             <Link href="/auth/sign-up" className="auth-link">

@@ -141,6 +141,38 @@
     flex-shrink: 0;
     position: relative;
     z-index: 10;
+    transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), padding 0.35s ease;
+}
+
+@media (min-width: 769px) {
+    .dash-sidebar:hover {
+        width: 240px;
+        align-items: flex-start;
+        padding: 24px 16px;
+    }
+
+    .dash-sidebar:hover .dash-sidebar-logo {
+        width: 100%;
+        justify-content: flex-start;
+        padding-left: 12px;
+        background: transparent;
+        font-size: 20px;
+        height: auto;
+        margin-bottom: 32px;
+    }
+
+    .dash-sidebar:hover .dash-sidebar-logo::after {
+        content: 'WorkForce';
+        margin-left: 12px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+
+    .dash-sidebar:hover .dash-sidebar-section-label {
+        text-align: left;
+        padding-left: 12px;
+        margin-bottom: 12px;
+    }
 }
 
 .dash-sidebar-logo {
@@ -155,6 +187,7 @@
     color: white;
     font-weight: 700;
     font-size: 16px;
+    transition: all 0.3s ease;
 }
 
 .dash-sidebar-section-label {
@@ -165,6 +198,7 @@
     margin: 16px 0 8px;
     width: 100%;
     text-align: center;
+    transition: all 0.3s ease;
 }
 
 .dash-sidebar-nav {
@@ -175,6 +209,15 @@
     width: 100%;
     padding: 0 10px;
     flex: 1;
+    transition: all 0.3s ease;
+}
+
+@media (min-width: 769px) {
+    .dash-sidebar:hover .dash-sidebar-nav,
+    .dash-sidebar:hover .dash-sidebar-bottom {
+        align-items: flex-start;
+        padding: 0;
+    }
 }
 
 .dash-sidebar-item {
@@ -186,11 +229,38 @@
     justify-content: center;
     color: var(--dash-sidebar-icon);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     border: none;
     background: transparent;
     position: relative;
     text-decoration: none;
+    overflow: hidden;
+}
+
+@media (min-width: 769px) {
+    .dash-sidebar:hover .dash-sidebar-item {
+        width: 100%;
+        justify-content: flex-start;
+        padding: 0 16px;
+        gap: 12px;
+    }
+}
+
+.dash-sidebar-item-label {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: 14px;
+    font-weight: 600;
+    transition: opacity 0.25s ease, width 0.25s ease;
+}
+
+@media (min-width: 769px) {
+    .dash-sidebar:hover .dash-sidebar-item-label {
+        opacity: 1;
+        width: auto;
+    }
 }
 
 .dash-sidebar-item:hover {
@@ -240,6 +310,7 @@
     min-width: 0;
     max-width: 100%;
     width: 100%;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* --- Status Strip (Pill Metrics) --- */

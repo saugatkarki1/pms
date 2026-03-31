@@ -78,6 +78,15 @@ export default function OwnerDashboardPage() {
     const fetchStats = async () => {
       try {
         const supabase = createClient()
+
+        // Verify we have an authenticated session before querying
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+        if (sessionError || !session) {
+          console.error('[OwnerDashboard] No active session:', sessionError?.message || 'session is null')
+          setLoading(false)
+          return
+        }
+
         const today = format(new Date(), 'yyyy-MM-dd')
 
         const { count: workersCount } = await supabase
@@ -108,8 +117,8 @@ export default function OwnerDashboardPage() {
           presentToday: present,
           pendingPayroll: payrollCount || 0,
         })
-      } catch (error) {
-        console.error('[OwnerDashboard] Error fetching stats:', error)
+      } catch (error: any) {
+        console.error('[OwnerDashboard] Error fetching stats:', error?.message || error?.code || JSON.stringify(error))
       } finally {
         setLoading(false)
       }
@@ -133,8 +142,8 @@ export default function OwnerDashboardPage() {
           .order('created_at', { ascending: false })
 
         setPendingWorkers(data || [])
-      } catch (error) {
-        console.error('[OwnerDashboard] Error fetching pending workers:', error)
+      } catch (error: any) {
+        console.error('[OwnerDashboard] Error fetching pending workers:', error?.message || error?.code || JSON.stringify(error))
       }
     }
     fetchPending()
@@ -161,19 +170,19 @@ export default function OwnerDashboardPage() {
             .eq('is_active', true)
 
           const countMap: Record<string, number> = {}
-          workers?.forEach(w => {
+          workers?.forEach((w: { department: string | null }) => {
             if (w.department) {
               countMap[w.department] = (countMap[w.department] || 0) + 1
             }
           })
 
-          setDepartments(depts.map(d => ({
+          setDepartments(depts.map((d: { id: string; name: string; description: string | null }) => ({
             ...d,
             worker_count: countMap[d.name] || 0,
           })))
         }
-      } catch (error) {
-        console.error('[OwnerDashboard] Error fetching departments:', error)
+      } catch (error: any) {
+        console.error('[OwnerDashboard] Error fetching departments:', error?.message || error?.code || JSON.stringify(error))
       }
     }
     fetchDepartments()
@@ -193,8 +202,8 @@ export default function OwnerDashboardPage() {
         .eq('id', workerId)
 
       setPendingWorkers(prev => prev.filter(w => w.id !== workerId))
-    } catch (error) {
-      console.error('[OwnerDashboard] Error approving worker:', error)
+    } catch (error: any) {
+      console.error('[OwnerDashboard] Error approving worker:', error?.message || error?.code || JSON.stringify(error))
     }
   }
 
@@ -204,8 +213,8 @@ export default function OwnerDashboardPage() {
       const supabase = createClient()
       await supabase.from('users').delete().eq('id', workerId)
       setPendingWorkers(prev => prev.filter(w => w.id !== workerId))
-    } catch (error) {
-      console.error('[OwnerDashboard] Error rejecting worker:', error)
+    } catch (error: any) {
+      console.error('[OwnerDashboard] Error rejecting worker:', error?.message || error?.code || JSON.stringify(error))
     }
   }
 

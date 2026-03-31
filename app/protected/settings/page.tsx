@@ -4,7 +4,7 @@ import { useUser } from '@/hooks/useUser'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { createClient } from '@/lib/supabase/client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { DashboardShell } from '@/components/dashboard/DashboardShell'
 import { Settings, Shield, Key, Code } from 'lucide-react'
 import '@/app/dashboard.css'
@@ -15,9 +15,19 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false)
   const [successMessage, setSuccessMessage] = useState('')
   const [formData, setFormData] = useState({
-    full_name: user?.full_name || '',
-    email: user?.email || '',
+    full_name: '',
+    email: '',
   })
+
+  // Populate form when user data loads
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        full_name: user.full_name || '',
+        email: user.email || '',
+      })
+    }
+  }, [user])
 
   const supabase = createClient()
 

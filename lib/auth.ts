@@ -32,9 +32,19 @@ export async function getCurrentUser(): Promise<User | null> {
     .from('users')
     .select('*')
     .eq('id', authUser.id)
-    .single()
+    .maybeSingle()
 
-  if (userError || !userData) {
+  if (userError) {
+    console.error('[auth] Failed to fetch user profile:', {
+      message: userError.message,
+      code: userError.code,
+      details: userError.details,
+    })
+    return null
+  }
+
+  if (!userData) {
+    console.warn('[auth] No user profile found for auth user:', authUser.id)
     return null
   }
 

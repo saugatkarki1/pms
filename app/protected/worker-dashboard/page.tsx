@@ -77,16 +77,16 @@ export default function WorkerDashboardPage() {
                     .from('attendance')
                     .select('*')
                     .eq('worker_id', workerData.id)
-                    .gte('date', startOfMonth)
-                    .lte('date', today)
-                    .order('date', { ascending: false })
+                    .gte('attendance_date', startOfMonth)
+                    .lte('attendance_date', today)
+                    .order('attendance_date', { ascending: false })
 
                 if (attendanceData) {
                     setStats((prev) => ({
                         ...prev,
-                        presentDays: attendanceData.filter((a) => a.status === 'present').length,
-                        absentDays: attendanceData.filter((a) => a.status === 'absent').length,
-                        lateDays: attendanceData.filter((a) => a.status === 'late').length,
+                        presentDays: attendanceData.filter((a: { status: string }) => a.status === 'present').length,
+                        absentDays: attendanceData.filter((a: { status: string }) => a.status === 'absent').length,
+                        lateDays: attendanceData.filter((a: { status: string }) => a.status === 'late').length,
                     }))
                 }
 
@@ -101,7 +101,7 @@ export default function WorkerDashboardPage() {
                     setStats((prev) => ({
                         ...prev,
                         totalEarnings: payrollData.reduce(
-                            (sum, p) => sum + (Number(p.net_salary) || 0),
+                            (sum: number, p: { net_salary: number | string }) => sum + (Number(p.net_salary) || 0),
                             0
                         ),
                     }))

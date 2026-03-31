@@ -80,7 +80,7 @@ export default function AttendancePage() {
         .from('workers')
         .select('id, first_name, last_name, employee_id')
         .eq('tenant_id', user.tenant_id)
-        .eq('status', 'active')
+        .eq('is_active', true)
       if (error) throw error
       setWorkers(data || [])
     } catch (error) {

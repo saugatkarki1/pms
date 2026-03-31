@@ -72,8 +72,8 @@ export default function WorkersPage() {
 
       if (error) throw error
       setWorkers(data || [])
-    } catch (error) {
-      console.error('Failed to fetch workers:', error)
+    } catch (error: any) {
+      console.error('Failed to fetch workers:', error?.message || error?.code || JSON.stringify(error))
     } finally {
       setLoading(false)
     }
@@ -161,8 +161,8 @@ export default function WorkersPage() {
       }
       setOpenDialog(false)
       fetchWorkers()
-    } catch (error) {
-      console.error('Failed to save worker:', error)
+    } catch (error: any) {
+      console.error('Failed to save worker:', error?.message || error?.code || JSON.stringify(error))
     }
   }
 
@@ -172,8 +172,8 @@ export default function WorkersPage() {
       const { error } = await supabase.from('workers').delete().eq('id', workerId)
       if (error) throw error
       fetchWorkers()
-    } catch (error) {
-      console.error('Failed to delete worker:', error)
+    } catch (error: any) {
+      console.error('Failed to delete worker:', error?.message || error?.code || JSON.stringify(error))
     }
   }
 
